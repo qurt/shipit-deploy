@@ -28,7 +28,6 @@ module.exports = function (gruntOrShipit) {
     .then(createReleasePath)
     .then(copyPreviousRelease)
     .then(remoteCopy)
-    .then(setCurrentRevision)
     .then(function () {
       shipit.emit('updated');
     });
@@ -107,21 +106,6 @@ module.exports = function (gruntOrShipit) {
           shipit.log(chalk.green('Previous release found.'));
           shipit.previousRelease = currentReleasseDirname;
         }
-      });
-    }
-
-    /**
-     * Set shipit.currentRevision and write it to REVISION file.
-     */
-
-    function setCurrentRevision() {
-      shipit.log('Setting current revision and creating revision file.');
-
-      return shipit.local('git rev-parse ' + shipit.config.branch, {cwd: shipit.config.workspace}).then(function(response) {
-        shipit.currentRevision = response.stdout.trim();
-        return shipit.remote('echo "' + shipit.currentRevision + '" > ' + path.join(shipit.releasePath, 'REVISION'));
-      }).then(function() {
-        shipit.log(chalk.green('Revision file created.'));
       });
     }
   }
